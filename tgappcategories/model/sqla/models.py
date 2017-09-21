@@ -10,7 +10,7 @@ DeclarativeBase = declarative_base()
 class Category(DeclarativeBase):
     __tablename__ = 'tgappcategories_categories'
 
-    uid = Column(Integer, autoincrement=True, primary_key=True)
+    _id = Column(Integer, autoincrement=True, primary_key=True)
 
     name = Column(Unicode())
     description = Column(Unicode())

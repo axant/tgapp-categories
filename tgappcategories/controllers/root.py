@@ -8,9 +8,8 @@ from tg.i18n import ugettext as _
 from tgappcategories import model
 from tgext.pluggable import app_model, plug_url, plug_redirect
 
-from tgappcategories.lib import forms
+from tgappcategories.lib import get_new_category_form, get_edit_category_form
 
-from bson.objectid import ObjectId
 
 class RootController(TGController):
     allow_only = predicates.has_permission('tgappcategories')
@@ -25,14 +24,14 @@ class RootController(TGController):
 
     @expose('tgappcategories.templates.new_category')
     def new_category(self):
-        return dict(form=forms.NewCategory,
+        return dict(form=get_new_category_form(),
                     mount_point=self.mount_point,
                     action=plug_url('tgappcategories', '/create_category'),
                     values=None,
                     )
 
     @expose()
-    @validate(forms.NewCategory, error_handler=new_category)
+    @validate(get_new_category_form(), error_handler=new_category)
     def create_category(self, **kwargs):
         dictionary = {
             'name': kwargs.get('name'),
@@ -45,17 +44,28 @@ class RootController(TGController):
 
     @expose('tgappcategories.templates.edit_category')
     def edit_category(self, category_id):
-        category = model.Category.query.get(_id=ObjectId(category_id))
-        return dict(form=forms.EditCategory,
+        __, categories = model.provider.query(model.Category,
+                                              filters={'_id': category_id})
+        category = categories[0]
+        return dict(form=get_edit_category_form(),
                     mount_point=self.mount_point,
                     action=plug_url('tgappcategories', '/update_category/' + category_id),
                     values=category,
                     )
 
     @expose()
+    @validate(get_edit_category_form(), error_handler=edit_category)
     def update_category(self, category_id, **kwargs):
-        category = model.Category.query.get(_id=ObjectId(category_id))
+        __, categories = model.provider.query(model.Category,
+                                              filters={'_id': category_id})
+        category = categories[0]
         category.name = kwargs.get('name')
         category.description = kwargs.get('description')
         flash(_('Category updated.'))
+        return redirect(url(self.mount_point))
+
+    @expose()
+    def delete_category(self, category_id):
+        model.provider.delete(model.Category, dict(_id=category_id))
+        flash(_('Category deleted'))
         return redirect(url(self.mount_point))

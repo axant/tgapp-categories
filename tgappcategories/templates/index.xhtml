@@ -11,17 +11,17 @@
             <a href="${tg.url(mount_point + '/new_category')}" class="btn btn-success">Add Category</a>
         </div>
     </div>
-    <div class="tgappcategories-list" style="margin-top: 10px">
+    <div class="tgappcategories-list">
         <div py:for="cat in categories">
             <div class="row" style="overflow-wrap: break-word; margin-bottom: 10px">
                 <span class="col-md-5 col-xs-12"><b>${cat.name}</b></span>
                 <span class="col-md-5 col-xs-12">${cat.description}</span>
                 <div class="col-md-2 col-xs-12" role="group" aria-label="...">
-                    <a href="${tg.url(mount_point + '/edit_category' + '/' + str(cat._id))}"
+                    <a href="${tg.url(mount_point + '/edit_category/' + str(cat._id))}"
                        class="tgappcategories-edit btn btn-primary">
                         <span class="glyphicon glyphicon-pencil"/>
                     </a>
-                    <a href="${tg.url(mount_point + '/delete_category')}"
+                    <a href="${tg.url(mount_point + '/delete_category/' + str(cat._id))}"
                        class="tgappcategories-delete btn btn-danger col col-md1"
                        onclick="return confirm('Are you sure?')">
                         <span class="glyphicon glyphicon-trash"/>
