@@ -19,14 +19,14 @@ def configure_models():
     global provider, Category
 
     if tg.config.get('use_sqlalchemy', False):
-        log.info('Configuring MailTemplates for SQLAlchemy')
+        log.info('Configuring TgappCategories for SQLAlchemy')
         from tgappcategories.model.sqla.models import Category
         from sprox.sa.provider import SAORMProvider
         provider = SAORMProvider(session=DBSession, engine=False)
     elif tg.config.get('use_ming', False):
-        log.info('Configuring MailTemplates for Ming')
+        log.info('Configuring TgappCategories for Ming')
         from tgappcategories.model.ming.models import Category
         from sprox.mg.provider import MingProvider
         provider = MingProvider(DBSession)
     else:
-        raise ValueError('MailTemplates should be used with sqlalchemy or ming')
+        raise ValueError('TgappCategories should be used with sqlalchemy or ming')

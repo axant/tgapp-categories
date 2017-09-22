@@ -13,7 +13,7 @@ class NewCategory(Form):
         name = TextField(label=l_('Category Name'), css_class='form-control',
                          validator=UnicodeString(min=3))
 
-        description = TextArea(label=l_('Category description'), rows=10, css_class='form-control',
+        description = TextArea(label=l_('Category Description'), rows=10, css_class='form-control',
                                validator=UnicodeString(min=3))
 
     submit = SubmitButton(css_class='btn btn-primary pull-right', value=l_('Create'))
