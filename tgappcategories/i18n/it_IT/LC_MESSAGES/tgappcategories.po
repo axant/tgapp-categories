@@ -1,0 +1,71 @@
+# Italian translations for tgapp-categories.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the tgapp-categories
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: tgapp-categories 0.1.1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-10-09 18:12+0200\n"
+"PO-Revision-Date: 2017-10-09 18:27+0200\n"
+"Language: it\n"
+"Language-Team: it <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+"Last-Translator: \n"
+"X-Generator: Poedit 2.0.4\n"
+
+#: tgappcategories/controllers/root.py:42
+msgid "Category created."
+msgstr "Categoria creata."
+
+#: tgappcategories/controllers/root.py:64
+msgid "Category updated."
+msgstr "Categoria aggiornata."
+
+#: tgappcategories/controllers/root.py:70
+msgid "Category deleted"
+msgstr "Categoria eliminata"
+
+#: tgappcategories/lib/forms.py:13 tgappcategories/templates/index.xhtml:19
+msgid "Name"
+msgstr "Nome"
+
+#: tgappcategories/lib/forms.py:16 tgappcategories/templates/index.xhtml:20
+msgid "Description"
+msgstr "Descrizione"
+
+#: tgappcategories/lib/forms.py:19
+msgid "Create"
+msgstr "Crea"
+
+#: tgappcategories/lib/forms.py:23
+msgid "Edit"
+msgstr "Modifica"
+
+#: tgappcategories/templates/edit_category.xhtml:4
+#: tgappcategories/templates/index.xhtml:4
+msgid "Welcome to TurboGears pluggable Application"
+msgstr "Welcome to TurboGears pluggable Application"
+
+#: tgappcategories/templates/edit_category.xhtml:11
+#: tgappcategories/templates/new_category.xhtml:11
+msgid "Back"
+msgstr "Indietro"
+
+#: tgappcategories/templates/index.xhtml:11
+msgid "Add Category"
+msgstr "Aggiungi Categoria"
+
+#: tgappcategories/templates/index.xhtml:18
+msgid "Actions"
+msgstr "Azioni"
+
+#: tgappcategories/templates/new_category.xhtml:4
+msgid "tgappcategories"
+msgstr "tgappcategories"
