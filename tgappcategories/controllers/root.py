@@ -23,7 +23,7 @@ class RootController(TGController):
                     )
 
     @expose('tgappcategories.templates.new_category')
-    def new_category(self):
+    def new_category(self, **_):
         return dict(form=get_new_category_form(),
                     mount_point=self.mount_point,
                     action=plug_url('tgappcategories', '/create_category'),
@@ -43,7 +43,7 @@ class RootController(TGController):
         return redirect(url(self.mount_point))
 
     @expose('tgappcategories.templates.edit_category')
-    def edit_category(self, category_id):
+    def edit_category(self, category_id, **_):
         __, categories = model.provider.query(model.Category,
                                               filters={'_id': category_id})
         category = categories[0]
