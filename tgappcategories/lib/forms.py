@@ -11,10 +11,10 @@ class KajikiBootstrapFormLayout(BootstrapFormLayout):
 class NewCategory(Form):    
     class child(KajikiBootstrapFormLayout):
         name = TextField(label=l_('Name'), css_class='form-control',
-                         validator=UnicodeString(min=3))
+                         validator=UnicodeString(not_empty=True))
 
         description = TextArea(label=l_('Description'), rows=10, css_class='form-control',
-                               validator=UnicodeString(min=3))
+                               validator=UnicodeString(not_empty=True))
 
     submit = SubmitButton(css_class='btn btn-primary pull-right', value=l_('Create'))
 
