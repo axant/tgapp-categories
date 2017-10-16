@@ -38,7 +38,6 @@ class RootController(TGController):
             'description': kwargs.get('description'),
         }
         model.provider.create(model.Category, dictionary)
-
         flash(_('Category created.'))
         return redirect(url(self.mount_point))
 
