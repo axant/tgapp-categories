@@ -1,5 +1,5 @@
 import tg
-from tgext.pluggable import app_model
+from tgext.pluggable import app_model, instance_primary_key
 from .base import configure_app, create_app, flush_db_changes
 from tgappcategories import model
 import re
@@ -82,14 +82,16 @@ class RegistrationControllerTests(object):
         assert count == 0, cats
 
     def test_new_category_form(self):
-        resp = self.app.get('/tgappcategories/new_category', extra_environ={'REMOTE_USER': 'manager'})
+        resp = self.app.get('/tgappcategories/new_category',
+                            extra_environ={'REMOTE_USER': 'manager'})
 
         assert 'name="name"' in resp.text, resp
         assert 'name="description"' in resp.text, resp
         assert '/create_category' in resp.text, resp
 
-    def test_edit_category_form(self):
-        self.app.get('/tgappcategories/edit_category', extra_environ={'REMOTE_USER': 'manager'}, status=404)
+    def test_edit_category_form_404(self):
+        self.app.get('/tgappcategories/edit_category',
+                     extra_environ={'REMOTE_USER': 'manager'}, status=404)
 
     def test_edit_category_form(self):
         self.app.get('/tgappcategories/create_category',
@@ -108,6 +110,19 @@ class RegistrationControllerTests(object):
         assert 'name="name"' in resp.text, resp
         assert 'name="description"' in resp.text, resp
         assert '/update_category' in resp.text, resp
+
+    def test_edit_category_validator(self):
+        self.app.get('/tgappcategories/create_category',
+                     params={'name': 'category one', 'description': 'pretty description'},
+                     extra_environ={'REMOTE_USER': 'manager'},
+                     status=302,
+                     )
+        __, cats = model.provider.query(model.Category, filters=dict(name='category one'))
+
+        resp = self.app.get('/tgappcategories/update_category/' + instance_primary_key(cats[0], True),
+                            params={'name': '', 'description': ''},
+                            extra_environ={'REMOTE_USER': 'manager'})
+        assert 'id="name:error">Enter a value', resp
 
 
 class TestRegistrationControllerSQLA(RegistrationControllerTests):
