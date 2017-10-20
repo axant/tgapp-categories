@@ -1,3 +1,9 @@
+.. image:: https://travis-ci.org/axant/tgapp-categories.svg?branch=master
+    :target: https://travis-ci.org/axant/tgapp-categories
+.. image:: https://coveralls.io/repos/github/axant/tgapp-categories/badge.svg?branch=master
+    :target: https://coveralls.io/github/axant/tgapp-categories?branch=master
+
+
 About tgapp-categories
 -------------------------
 
