@@ -15,6 +15,7 @@ def get_new_category_form():
 
     return new_category_form
 
+
 def get_edit_category_form():
     edit_category_config = config['_pluggable_tgappcategories_config']
     edit_category_form = edit_category_config.get('edit_category_form_instance')

@@ -2,11 +2,11 @@
 """Main Controller"""
 
 from tg import TGController
-from tg import expose, flash, require, url, lurl, request, redirect, validate, predicates
+from tg import expose, flash, url, redirect, validate, predicates, abort
 from tg.i18n import ugettext as _
 
 from tgappcategories import model
-from tgext.pluggable import app_model, plug_url, plug_redirect
+from tgext.pluggable import plug_url
 
 from tgappcategories.lib import get_new_category_form, get_edit_category_form
 
@@ -33,19 +33,31 @@ class RootController(TGController):
     @expose()
     @validate(get_new_category_form(), error_handler=new_category)
     def create_category(self, **kwargs):
-        dictionary = {
+        image_small = {
+            'content': kwargs.get('image_small'),
+            'image_name': 'image_small',
+        }
+        img_small = model.provider.create(model.CategoryImage, image_small)
+        image_big = {
+            'content': kwargs.get('image_big'),
+            'image_name': 'image_big',
+        }
+        img_big = model.provider.create(model.CategoryImage, image_big)
+        category = {
             'name': kwargs.get('name'),
             'description': kwargs.get('description'),
+            'images': [img_small, img_big],
         }
-        model.provider.create(model.Category, dictionary)
+        model.provider.create(model.Category, category)
         flash(_('Category created.'))
         return redirect(url(self.mount_point))
 
     @expose('tgappcategories.templates.edit_category')
     def edit_category(self, category_id, **_):
-        __, categories = model.provider.query(model.Category,
-                                              filters={'_id': category_id})
-        category = categories[0]
+        category = model.provider.get_obj(model.Category, {'_id': category_id}) or abort(404)
+        category['image_small_id'] = category.images[0]._id
+        category['image_big_id'] = category.images[1]._id
+
         return dict(form=get_edit_category_form(),
                     mount_point=self.mount_point,
                     action=plug_url('tgappcategories', '/update_category/' + category_id),
@@ -60,6 +72,26 @@ class RootController(TGController):
         category = categories[0]
         category.name = kwargs.get('name')
         category.description = kwargs.get('description')
+
+        img_small = img_big = None
+        if kwargs.get('image_small') is not None:
+            image_small = {
+                'content': kwargs.get('image_small'),
+                'image_name': 'image_small',
+            }
+            img_small = model.provider.create(model.CategoryImage, image_small)
+        if kwargs.get('image_big') is not None:
+            image_big = {
+                'content': kwargs.get('image_big'),
+                'image_name': 'image_big',
+            }
+            img_big = model.provider.create(model.CategoryImage, image_big)
+        original_small = model.provider.get_obj(model.CategoryImage,
+                                                {'_id': kwargs.get('image_small_id')})
+        original_big = model.provider.get_obj(model.CategoryImage,
+                                              {'_id': kwargs.get('image_big_id')})
+        category.images = [img_small or original_small, img_big or original_big]
+
         flash(_('Category updated.'))
         return redirect(url(self.mount_point))
 

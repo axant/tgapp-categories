@@ -11,8 +11,9 @@ except ImportError:
 install_requires = [
     "TurboGears2 >= 2.3.9",
     "tgext.pluggable >= 0.7.1",
-    "axf",
     'sprox',
+    "filedepot",
+    'kajiki',
 ]
 
 testpkgs = [
@@ -24,7 +25,6 @@ testpkgs = [
     'zope.sqlalchemy',
     'repoze.who',
     'tw2.forms',
-    'kajiki',
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

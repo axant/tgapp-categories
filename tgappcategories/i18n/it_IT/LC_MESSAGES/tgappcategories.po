@@ -8,64 +8,75 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tgapp-categories 0.1.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-10-09 18:12+0200\n"
+"POT-Creation-Date: 2018-01-05 16:49+0100\n"
 "PO-Revision-Date: 2017-10-09 18:27+0200\n"
+"Last-Translator: \n"
 "Language: it\n"
 "Language-Team: it <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.1\n"
-"Last-Translator: \n"
-"X-Generator: Poedit 2.0.4\n"
 
-#: tgappcategories/controllers/root.py:42
+#: tgappcategories/controllers/root.py:52
 msgid "Category created."
 msgstr "Categoria creata."
 
-#: tgappcategories/controllers/root.py:64
+#: tgappcategories/controllers/root.py:97
 msgid "Category updated."
 msgstr "Categoria aggiornata."
 
-#: tgappcategories/controllers/root.py:70
+#: tgappcategories/controllers/root.py:103
 msgid "Category deleted"
 msgstr "Categoria eliminata"
 
-#: tgappcategories/lib/forms.py:13 tgappcategories/templates/index.xhtml:19
+#: tgappcategories/lib/forms.py:44 tgappcategories/templates/index.xhtml:19
 msgid "Name"
 msgstr "Nome"
 
-#: tgappcategories/lib/forms.py:16 tgappcategories/templates/index.xhtml:20
+#: tgappcategories/lib/forms.py:47 tgappcategories/templates/index.xhtml:20
 msgid "Description"
 msgstr "Descrizione"
 
-#: tgappcategories/lib/forms.py:19
+#: tgappcategories/lib/forms.py:50
+#: tgappcategories/templates/edit_category.xhtml:17
+#: tgappcategories/templates/index.xhtml:18
+msgid "Small Image"
+msgstr "Immagine Piccola"
+
+#: tgappcategories/lib/forms.py:52
+#: tgappcategories/templates/edit_category.xhtml:20
+#: tgappcategories/templates/index.xhtml:21
+msgid "Big Image"
+msgstr "Immagine Grande"
+
+#: tgappcategories/lib/forms.py:55
 msgid "Create"
 msgstr "Crea"
 
-#: tgappcategories/lib/forms.py:23
+#: tgappcategories/lib/forms.py:59
 msgid "Edit"
 msgstr "Modifica"
 
-#: tgappcategories/templates/edit_category.xhtml:4
-#: tgappcategories/templates/index.xhtml:4
-msgid "Welcome to TurboGears pluggable Application"
-msgstr "Welcome to TurboGears pluggable Application"
-
-#: tgappcategories/templates/edit_category.xhtml:11
-#: tgappcategories/templates/new_category.xhtml:11
+#: tgappcategories/templates/edit_category.xhtml:10
+#: tgappcategories/templates/new_category.xhtml:10
 msgid "Back"
 msgstr "Indietro"
 
-#: tgappcategories/templates/index.xhtml:11
+#: tgappcategories/templates/edit_category.xhtml:17
+#: tgappcategories/templates/edit_category.xhtml:20
+msgid "already present"
+msgstr "già presente"
+
+#: tgappcategories/templates/index.xhtml:10
 msgid "Add Category"
 msgstr "Aggiungi Categoria"
 
-#: tgappcategories/templates/index.xhtml:18
+#: tgappcategories/templates/index.xhtml:17
 msgid "Actions"
 msgstr "Azioni"
 
-#: tgappcategories/templates/new_category.xhtml:4
-msgid "tgappcategories"
-msgstr "tgappcategories"
+#: tgappcategories/templates/index.xhtml:49
+msgid "Open"
+msgstr "Apri"

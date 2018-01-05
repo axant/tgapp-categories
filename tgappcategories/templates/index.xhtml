@@ -1,11 +1,10 @@
 <html py:extends="master.xhtml" py:strip="True">
 <head py:block="head" py:strip="True">
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" py:if="False"/>
-  <title py:block="master_title">Welcome to TurboGears pluggable Application</title>
-  <link rel="stylesheet" type="text/css" media="screen" href="${tg.url('/_pluggable/tgappcategories/css/style.css')}" />
 </head>
 
 <body py:block="body" py:strip="True">
+  <link rel="stylesheet" type="text/css" media="screen" href="${tg.url('/_pluggable/tgappcategories/css/style.css')}" />
   <div class="row">
     <div class="col-md-2 col-xs-12 col-md-offset-10">
       <a href="${tg.url(mount_point + '/new_category')}" class="btn btn-success">Add Category</a>
@@ -16,8 +15,10 @@
       <thead>
         <tr>
           <th>Actions</th>
+          <th>Small Image</th>
           <th>Name</th>
           <th>Description</th>
+          <th>Big Image</th>
         </tr>
       </thead>
       <tbody>
@@ -36,10 +37,20 @@
             </a>
           </td>
           <td>
+            <img py:if="h.tgappcategories.content_of_first_small_image(cat)"
+                 src="${h.tgappcategories.content_of_first_small_image(cat)._public_url}"
+                 class="small-image"/>
+          </td>
+          <td>
             <span class="col-md-5 col-xs-12"><b>${cat.name}</b></span>
           </td>
           <td>
             <span class="col-md-5 col-xs-12">${cat.description}</span>
+          </td>
+          <td>
+            <a py:if="h.tgappcategories.content_of_first_big_image(cat)"
+               href="${h.tgappcategories.content_of_first_big_image(cat)._public_url}"
+               target="_blank">Open</a>
           </td>
         </tr>
       </tbody>

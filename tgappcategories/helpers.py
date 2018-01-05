@@ -2,19 +2,24 @@
 
 """WebHelpers used in tgapp-categories."""
 
-#from webhelpers import date, feedgenerator, html, number, misc, text
-from markupsafe import Markup
 
-def bold(text):
-    return Markup('<strong>%s</strong>' % text)
+def images_with_image_name(category, image_name):
+    return filter(lambda c: c.image_name == image_name, category.images)
 
 
-# waiting for a new version of tgext.pluggable
-try:
-    from tgext.pluggable.utils import instance_primary_key
-except ImportError:  # when tgext.pluggable is not updated
-    def instance_primary_key(instance, as_string=False):
-        """Returns the value of the primary key of the instance"""
-        from tgext.pluggable.utils import primary_key
-        p = getattr(instance, primary_key(instance.__class__).name)
-        return p if not as_string else str(p)
+def content_of_first_small_image(category):
+    try:
+        print(images_with_image_name(category, 'image_small'))
+        return images_with_image_name(category, 'image_small')[0].content
+    except IndexError:
+        return None
+
+
+def content_of_first_big_image(category):
+    try:
+        return images_with_image_name(category, 'image_big')[0].content
+    except IndexError:
+        return None
+
+
+from tgext.pluggable.utils import instance_primary_key

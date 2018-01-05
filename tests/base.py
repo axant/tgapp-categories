@@ -1,3 +1,5 @@
+from os import getcwd
+
 import bson
 from webtest import TestApp
 import transaction
@@ -172,7 +174,7 @@ def create_app(app_config, auth=False):
 
     app = app_config.make_wsgi_app(skip_authentication=True)
     if auth:
-        app = TestApp(app, extra_environ=dict(REMOTE_USER='user'))
+        app = TestApp(app, extra_environ=dict(REMOTE_USER='user'), relative_to=getcwd())
     else:
         app = TestApp(app)
         

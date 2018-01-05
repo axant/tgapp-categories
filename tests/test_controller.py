@@ -40,11 +40,13 @@ class RegistrationControllerTests(object):
         assert 'pretty description' == cats[0].description, cats[0].description
 
     def test_update_category(self):
-        self.app.get('/tgappcategories/create_category',
-                     params={'name': 'category one', 'description': 'pretty description'},
-                     extra_environ={'REMOTE_USER': 'manager'},
-                     status=302,
-                     )
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'category one', 'description': 'pretty description'},
+            upload_files=[('image_small', 'tgappcategories/public/images/star.png')],
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
         __, cats = model.provider.query(model.Category,
                                         filters=dict(name='category one'),
                                         )
@@ -125,10 +127,10 @@ class RegistrationControllerTests(object):
         assert 'id="name:error">Enter a value', resp
 
 
-class TestRegistrationControllerSQLA(RegistrationControllerTests):
-    @classmethod
-    def setupClass(cls):
-        cls.app_config = configure_app('sqlalchemy')
+# class TestRegistrationControllerSQLA(RegistrationControllerTests):
+#     @classmethod
+#     def setupClass(cls):
+#         cls.app_config = configure_app('sqlalchemy')
 
 
 class TestRegistrationControllerMing(RegistrationControllerTests):
