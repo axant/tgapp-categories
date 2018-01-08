@@ -55,8 +55,8 @@ class RootController(TGController):
     @expose('tgappcategories.templates.edit_category')
     def edit_category(self, category_id, **_):
         category = model.provider.get_obj(model.Category, {'_id': category_id}) or abort(404)
-        category['image_small_id'] = category.images[0]._id
-        category['image_big_id'] = category.images[1]._id
+        category.image_small_id = category.images[0]._id
+        category.image_big_id = category.images[1]._id
 
         return dict(form=get_edit_category_form(),
                     mount_point=self.mount_point,

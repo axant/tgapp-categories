@@ -171,14 +171,15 @@ def configure_app(using):
     app_cfg['depot.category_images.backend'] = 'depot.io.memory.MemoryFileStorage'
     app_cfg['depot.category_images.prefix'] = 'category_images/'
 
-    storages = {
-        'category_images': 'category_image',
-    }
-    for storage in storages:
-        prefix = 'depot.%s.' % storage
-        print('Configuring Storage %s*' % prefix)
-        DepotManager.configure(storage, app_cfg, prefix)
-        DepotManager.alias(storages[storage], storage)
+    if using == 'ming':  # ugly fix: depot can be configured just once
+        storages = {
+            'category_images': 'category_image',
+        }
+        for storage in storages:
+            prefix = 'depot.%s.' % storage
+            print('Configuring Storage %s*' % prefix)
+            DepotManager.configure(storage, app_cfg, prefix)
+            DepotManager.alias(storages[storage], storage)
 
     plug(app_cfg, 'tgappcategories', plug_bootstrap=False)
     return app_cfg

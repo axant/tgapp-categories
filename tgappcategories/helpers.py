@@ -4,7 +4,7 @@
 
 
 def images_with_image_name(category, image_name):
-    return filter(lambda c: c.image_name == image_name, category.images)
+    return [c for c in category.images if c.image_name == image_name]
 
 
 def content_of_first_small_image(category):

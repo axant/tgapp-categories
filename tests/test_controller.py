@@ -132,13 +132,13 @@ class RegistrationControllerTests(object):
         assert 'id="name:error">Enter a value', resp
 
 
-# class TestRegistrationControllerSQLA(RegistrationControllerTests):
-#     @classmethod
-#     def setupClass(cls):
-#         cls.app_config = configure_app('sqlalchemy')
+class TestCategoriesControllerSQLA(RegistrationControllerTests):
+    @classmethod
+    def setupClass(cls):
+        cls.app_config = configure_app('sqlalchemy')
 
 
-class TestRegistrationControllerMing(RegistrationControllerTests):
+class TestCategoriesControllerMing(RegistrationControllerTests):
     @classmethod
     def setupClass(cls):
         cls.app_config = configure_app('ming')

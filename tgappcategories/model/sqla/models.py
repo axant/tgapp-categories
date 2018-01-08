@@ -1,5 +1,5 @@
-from sqlalchemy import Column
-from sqlalchemy.types import Unicode, Integer, ForeignKey
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy.types import Unicode, Integer
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -18,8 +18,6 @@ class Category(DeclarativeBase):
     name = Column(Unicode())
     description = Column(Unicode())
 
-    images = relationship('CategoryImage', backref='category')
-
 
 class CategoryImage(DeclarativeBase):
     __tablename__ = 'tgappcategories_images'
@@ -29,3 +27,6 @@ class CategoryImage(DeclarativeBase):
     content = UploadedFileField(upload_storage='category_image')
 
     image_name = Column(Unicode)
+
+    category_id = Column(Integer, ForeignKey('tgappcategories_categories._id'))
+    category = relationship('Category', backref='images')

@@ -35,7 +35,7 @@ except IOError:
 
 setup(
     name='tgapp-categories',
-    version='0.1.4',
+    version='0.2.0',
     description='categories management system for web applications in turbogears2',
     long_description=README,
     author='Axant, Vincenzo Castilgia',

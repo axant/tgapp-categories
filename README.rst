@@ -6,8 +6,11 @@
 
 About tgapp-categories
 -------------------------
-
-tgapp-categories is a Pluggable application for TurboGears2.
+This pluggable allow you to manage (create, read, update, delete)
+categories on a website.
+The categories cannot be nested.
+There are 2 images associated to every category
+This plugin works with both sqlalchemy and ming
 
 Installing
 -------------------------------
@@ -27,28 +30,50 @@ In your application *config/app_cfg.py* import **plug**::
 
 Then at the *end of the file* call plug with tgappcategories::
 
-    plug(base_config, 'tgappcategories')
+    plug(base_config, 'tgappcategories', 'categories')
 
 You will be able to access the plugged application at
-*http://localhost:8080/tgappcategories*.
+*http://localhost:8080/categories*.
 
-Available Hooks
-----------------------
+Permissions
+-----------
+This pluggable creates a Permission named 'tgappcategories', that has to be assigned
+to the categories management users group.
+You can assign it with a migration or evolution, using alembic or tgext.evolve
 
-tgapp-categories makes available a some hooks which will be
-called during some actions to alter the default
-behavior of the appplications:
+example of an evolution with tgext.evolve and ming::
 
-Exposed Partials
-----------------------
+    class TgappCategories(Evolution):
+    """Assigns the tgappcategories permission to Managers"""
+    evolution_id = 'tgapp-categories'
 
-tgapp-categories exposes a bunch of partials which can be used
-to render pieces of the blogging system anywhere in your
-application:
+    def evolve(self):
+        log.info('TgappCategories migration running')
 
-Exposed Templates
---------------------
+        g_managers = model.Group.query.find({'group_name': 'managers'}).one()
 
-The templates used by registration and that can be replaced with
-*tgext.pluggable.replace_template* are:
+        p_tgappcategories = model.Permission.query.find(
+            {'permission_name': 'tgappcategories'}).one()
+        p_tgappcategories.groups = [g_managers]
+        model.DBSession.flush_all()
 
+
+
+Depot
+-----
+This pluggable **needs** depot in order to work
+you can find depot at https://github.com/amol-/depot
+after you inserted depot into your project configure a storage called ``category_images``
+example::
+
+    app_cfg['depot_backend_type'] = 'depot.io.memory.MemoryFileStorage'
+    app_cfg['depot.category_images.backend'] = 'depot.io.memory.MemoryFileStorage'
+    app_cfg['depot.category_images.prefix'] = 'category_images/'
+    storages = {
+        'category_images': 'category_image',
+    }
+    for storage in storages:
+        prefix = 'depot.%s.' % storage
+        print('Configuring Storage %s*' % prefix)
+        DepotManager.configure(storage, app_cfg, prefix)
+        DepotManager.alias(storages[storage], storage)
