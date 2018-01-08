@@ -21,6 +21,8 @@ from ming.odm.declarative import MappedClass
 from ming.odm import FieldProperty
 from ming import schema as s
 
+from depot.manager import DepotManager
+
 
 class FakeAppPackage(object):
     __file__ = __file__
@@ -165,6 +167,19 @@ def configure_app(using):
     app_cfg.model = app_cfg.package.model
     app_cfg.DBSession = app_cfg.package.model.DBSession
 
+    app_cfg['depot_backend_type'] = 'depot.io.memory.MemoryFileStorage'
+    app_cfg['depot.category_images.backend'] = 'depot.io.memory.MemoryFileStorage'
+    app_cfg['depot.category_images.prefix'] = 'category_images/'
+
+    storages = {
+        'category_images': 'category_image',
+    }
+    for storage in storages:
+        prefix = 'depot.%s.' % storage
+        print('Configuring Storage %s*' % prefix)
+        DepotManager.configure(storage, app_cfg, prefix)
+        DepotManager.alias(storages[storage], storage)
+
     plug(app_cfg, 'tgappcategories', plug_bootstrap=False)
     return app_cfg
 
@@ -173,6 +188,10 @@ def create_app(app_config, auth=False):
     from tgappcategories import lib
 
     app = app_config.make_wsgi_app(skip_authentication=True)
+
+    DepotManager._middleware = None
+    app = DepotManager.make_middleware(app)
+
     if auth:
         app = TestApp(app, extra_environ=dict(REMOTE_USER='user'), relative_to=getcwd())
     else:

@@ -48,9 +48,9 @@ class NewCategory(Form):
                                validator=Required)
 
         image_small = FileField(label=pluggable_config.get('image1_label', l_('Small Image')),
-                                css_class='form-control')
+                                css_class='form-control', attrs=dict(accept='image/*'))
         image_big = FileField(label=pluggable_config.get('image2_label', l_('Big Image')),
-                              css_class='form-control')
+                              css_class='form-control', attrs=dict(accept='image/*'))
 
     submit = SubmitButton(css_class='btn btn-primary pull-right', value=l_('Create'))
 

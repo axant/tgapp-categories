@@ -4,6 +4,9 @@ from .base import configure_app, create_app, flush_db_changes
 from tgappcategories import model
 import re
 from webtest import AppError
+
+from tgappcategories.helpers import images_with_image_name
+
 find_urls = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 
 
@@ -47,15 +50,17 @@ class RegistrationControllerTests(object):
             extra_environ={'REMOTE_USER': 'manager'},
             status=302,
         )
-        __, cats = model.provider.query(model.Category,
-                                        filters=dict(name='category one'),
-                                        )
-
-        self.app.get('/tgappcategories/update_category/' + str(cats[0]._id),
-                     params={'name': 'edited category', 'description': 'edited description'},
-                     extra_environ={'REMOTE_USER': 'manager'},
-                     status=302,
-                     )
+        # Note that images are always created but with content = None
+        __, cats = model.provider.query(model.Category, filters=dict(name='category one'))
+        small_id = images_with_image_name(cats[0], 'image_small')[0]._id
+        big_id = images_with_image_name(cats[0], 'image_big')[0]._id
+        self.app.get(
+            '/tgappcategories/update_category/' + str(cats[0]._id),
+            params={'name': 'edited category', 'description': 'edited description',
+                    'image_small_id': small_id, 'image_big_id': big_id},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
         __, cats = model.provider.query(model.Category,
                                         filters=dict(name='edited category'),
                                         )
