@@ -77,3 +77,9 @@ example::
         print('Configuring Storage %s*' % prefix)
         DepotManager.configure(storage, app_cfg, prefix)
         DepotManager.alias(storages[storage], storage)
+
+Available Hooks
+---------------
+
+tgapp-cateogries exposes some hooks to configure it's behavior, The hooks that can be used with TurboGears2 register_hook are:
+    * **categories.after_update(category, kwargs) -> Runs after a category is updated.

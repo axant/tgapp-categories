@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Main Controller"""
 
+import tg
 from tg import TGController
 from tg import expose, flash, url, redirect, validate, predicates, abort
 from tg.i18n import ugettext as _
@@ -92,6 +93,7 @@ class RootController(TGController):
                                               {'_id': kwargs.get('image_big_id')})
         category.images = [img_small or original_small, img_big or original_big]
 
+        tg.hooks.notify('categories.after_update', args=(category, kwargs))
         flash(_('Category updated.'))
         return redirect(url(self.mount_point))
 
