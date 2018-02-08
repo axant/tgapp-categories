@@ -5,9 +5,11 @@
 
 <body py:block="body" py:strip="True">
   <link rel="stylesheet" type="text/css" media="screen" href="${tg.url('/_pluggable/tgappcategories/css/style.css')}" />
-  <div class="row">
+  <div class="row categories-toolbar">
     <div class="col-md-10 col-md-offset-1">
-      <a href="${tg.url(mount_point + '/new_category')}" class="btn btn-success">Add Category</a>
+      <a href="${tg.url(mount_point + '/new_category')}" class="pull-right btn btn-success">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"/> Create
+      </a>
     </div>
   </div>
   <div class="col-md-10 col-md-offset-1">
