@@ -10,6 +10,6 @@ install:
     - travis_retry pip install coveralls
     - pip install -e .[testing]
 script:
-- nosetests -v --tests=tests -d --with-coverage --cover-package=tgappcategories
+- nosetests -v
 after_success: 
   coveralls
