@@ -1,13 +1,16 @@
+import os
+import re
+
 import tg
 from tgext.pluggable import app_model, instance_primary_key
 from .base import configure_app, create_app, flush_db_changes
 from tgappcategories import model
-import re
 from webtest import AppError
 
 from tgappcategories.helpers import images_with_image_name
 
 find_urls = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+HERE = os.path.dirname(__file__)
 
 
 class RegistrationControllerTests(object):
@@ -30,23 +33,32 @@ class RegistrationControllerTests(object):
             assert '401' in str(e)
 
     def test_create_category(self):
-        self.app.get('/tgappcategories/create_category',
-                     params={'name': 'category one', 'description': 'pretty description'},
-                     extra_environ={'REMOTE_USER': 'manager'},
-                     status=302,
-                     )
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'category one', 'description': 'pretty description'},
+            upload_files=[
+                ('image_small',
+                 os.path.join(HERE, '..', 'tgappcategories/public/images/star.png'))
+            ],
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
         __, cats = model.provider.query(model.Category,
-                                        filters=dict(name='category one'),
-                                        )
+                                        filters=dict(name='category one'))
+        cat = cats[0]
 
-        assert 'category one' == cats[0].name, cats[0].name
-        assert 'pretty description' == cats[0].description, cats[0].description
+        assert 'category one' == cat.name, cat.name
+        assert 'pretty description' == cat.description, cat.description
+        assert next(i for i in cat.images if i.image_name == 'image_small').content.url.startswith('/depot/category_images/')
 
     def test_update_category(self):
         self.app.post(
             '/tgappcategories/create_category',
             params={'name': 'category one', 'description': 'pretty description'},
-            upload_files=[('image_small', 'tgappcategories/public/images/star.png')],
+            upload_files=[
+                ('image_small',
+                 os.path.join(HERE, '..', 'tgappcategories/public/images/star.png'))
+            ],
             extra_environ={'REMOTE_USER': 'manager'},
             status=302,
         )

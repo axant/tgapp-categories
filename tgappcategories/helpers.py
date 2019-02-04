@@ -9,7 +9,6 @@ def images_with_image_name(category, image_name):
 
 def content_of_first_small_image(category):
     try:
-        print(images_with_image_name(category, 'image_small'))
         return images_with_image_name(category, 'image_small')[0].content
     except IndexError:
         return None

@@ -24,7 +24,7 @@ class CategoryImage(DeclarativeBase):
 
     _id = Column(Integer, autoincrement=True, primary_key=True)
 
-    content = UploadedFileField(upload_storage='category_image')
+    content = Column(UploadedFileField(upload_storage='category_image'))
 
     image_name = Column(Unicode)
 

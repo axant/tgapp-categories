@@ -41,7 +41,7 @@
             </td>
             <td>
               <img py:if="h.tgappcategories.content_of_first_small_image(cat)"
-                   src="${h.tgappcategories.content_of_first_small_image(cat)._public_url}"
+                   src="${h.tgappcategories.content_of_first_small_image(cat).url}"
                    class="small-image"/>
             </td>
             <td>
@@ -52,7 +52,7 @@
             </td>
             <td>
               <a py:if="h.tgappcategories.content_of_first_big_image(cat)"
-                 href="${h.tgappcategories.content_of_first_big_image(cat)._public_url}"
+                 href="${h.tgappcategories.content_of_first_big_image(cat).url}"
                  target="_blank">Open</a>
             </td>
           </tr>

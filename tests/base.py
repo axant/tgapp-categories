@@ -1,6 +1,5 @@
 from os import getcwd
 
-import bson
 from webtest import TestApp
 import transaction
 
@@ -100,7 +99,7 @@ class FakeMingModel(object):
             self.ming_session.ensure_indexes(mapper.collection)
 
 
-class FakeUser(bson.ObjectId):
+class FakeUser(object):
     """
     Fake user that emulates an users without the need to actually
     query it from the database, it is able to trick sprox when
