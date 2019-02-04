@@ -144,6 +144,7 @@ def configure_app(using):
     app_cfg.use_dotted_templatenames = True
     app_cfg.package = FakeAppPackage()
     app_cfg.use_toscawidgets2 = True
+    app_cfg['tw2.enabled'] = True
     app_cfg.sa_auth.authmetadata = TestAuthMetadata()
     app_cfg['beaker.session.secret'] = app_cfg['session.secret'] = 'SECRET'
     app_cfg.auth_backend = 'ming'
@@ -154,6 +155,7 @@ def configure_app(using):
         app_cfg.use_sqlalchemy = True
         app_cfg['sqlalchemy.url'] = 'sqlite://'
         app_cfg.use_transaction_manager = True
+        app_cfg['tm.enabled'] = True
         app_cfg.SQLASession = app_cfg.package.model.DBSession
     elif using == 'ming':
         app_cfg.package.model = FakeMingModel()
@@ -166,10 +168,6 @@ def configure_app(using):
     app_cfg.model = app_cfg.package.model
     app_cfg.DBSession = app_cfg.package.model.DBSession
 
-    app_cfg['depot_backend_type'] = 'depot.io.memory.MemoryFileStorage'
-    app_cfg['depot.category_images.backend'] = 'depot.io.memory.MemoryFileStorage'
-    app_cfg['depot.category_images.prefix'] = 'category_images/'
-
     if using == 'ming':  # ugly fix: depot can be configured just once
         storages = {
             'category_images': 'category_image',
@@ -177,7 +175,11 @@ def configure_app(using):
         for storage in storages:
             prefix = 'depot.%s.' % storage
             print('Configuring Storage %s*' % prefix)
-            DepotManager.configure(storage, app_cfg, prefix)
+            DepotManager.configure(storage, {
+                'depot_backend_type': 'depot.io.memory.MemoryFileStorage',
+                'depot.category_images.backend': 'depot.io.memory.MemoryFileStorage',
+                'depot.category_images.prefix': 'category_images/'
+            }, prefix)
             DepotManager.alias(storages[storage], storage)
 
     plug(app_cfg, 'tgappcategories', plug_bootstrap=False)
