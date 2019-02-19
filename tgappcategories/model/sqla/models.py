@@ -15,8 +15,8 @@ class Category(DeclarativeBase):
 
     _id = Column(Integer, autoincrement=True, primary_key=True)
 
-    name = Column(Unicode())
-    description = Column(Unicode())
+    name = Column(Unicode(255))
+    description = Column(Unicode(1024))
 
 
 class CategoryImage(DeclarativeBase):
@@ -26,7 +26,7 @@ class CategoryImage(DeclarativeBase):
 
     content = Column(UploadedFileField(upload_storage='category_image'))
 
-    image_name = Column(Unicode)
+    image_name = Column(Unicode(255))
 
     category_id = Column(Integer, ForeignKey('tgappcategories_categories._id'))
     category = relationship('Category', backref='images')
