@@ -17,7 +17,7 @@ class RootController(TGController):
 
     @expose('tgappcategories.templates.index')
     def index(self):
-        categories = model.provider.query(model.Category)
+        categories = model.provider.query(model.Category, order_by='path')
         return dict(categories_count=categories[0],
                     categories=categories[1],
                     mount_point=self.mount_point,
@@ -34,6 +34,8 @@ class RootController(TGController):
     @expose()
     @validate(get_new_category_form(), error_handler=new_category)
     def create_category(self, **kwargs):
+        parent = model.provider.get_obj(model.Category, {'_id': kwargs.get('pare\
+nt_id')})
         image_small = {
             'content': kwargs.get('image_small'),
             'image_name': 'image_small',
@@ -48,6 +50,8 @@ class RootController(TGController):
             'name': kwargs.get('name'),
             'description': kwargs.get('description'),
             'images': [img_small, img_big],
+            'path': parent.path if parent else '',  # before saving this will be updated
+            'depth': parent.depth + 1 if parent else 1,
         }
         model.provider.create(model.Category, category)
         flash(_('Category created.'))
@@ -58,7 +62,7 @@ class RootController(TGController):
         category = model.provider.get_obj(model.Category, {'_id': category_id}) or abort(404)
         category.image_small_id = category.images[0]._id
         category.image_big_id = category.images[1]._id
-
+        category.parent_id = category.parent_path.split('.')[-1]
         return dict(form=get_edit_category_form(),
                     mount_point=self.mount_point,
                     action=plug_url('tgappcategories', '/update_category/' + category_id),
@@ -87,18 +91,41 @@ class RootController(TGController):
                 'image_name': 'image_big',
             }
             img_big = model.provider.create(model.CategoryImage, image_big)
+        category_parent_id = category.parent._id if category.parent else None
+        if kwargs.get('parent_id') != category_parent_id:
+            old_path = category.path
+            old_depth = category.depth
+            new_parent = model.provider.get_obj(model.Category, {'_id': kwargs.get('parent_id')})
+            new_parent_path = new_parent.path if new_parent else ''
+            if new_parent_path == old_path:
+                abort(412, _('Cannot move category into itself'))
+            new_parent_depth = new_parent.depth if new_parent else 0
+            new_path = new_parent_path + '.%s' % category._id
+            new_depth = new_parent_depth + 1
+            for d in category.descendants:
+                if new_parent_path == d.path:
+                    abort(412, _('Cannot move category to a descendant category'))            
+                d.path = d.path.replace(old_path, new_path)
+                d.depth += (new_depth - old_depth)
+            category.path = new_path
+            category.depth = new_depth
         original_small = model.provider.get_obj(model.CategoryImage,
                                                 {'_id': kwargs.get('image_small_id')})
         original_big = model.provider.get_obj(model.CategoryImage,
                                               {'_id': kwargs.get('image_big_id')})
         category.images = [img_small or original_small, img_big or original_big]
 
+            
         tg.hooks.notify('categories.after_update', args=(category, kwargs))
         flash(_('Category updated.'))
         return redirect(url(self.mount_point))
 
     @expose()
     def delete_category(self, category_id):
-        model.provider.delete(model.Category, dict(_id=category_id))
-        flash(_('Category deleted'))
-        return redirect(url(self.mount_point))
+        category = model.provider.get_obj(model.Category, dict(_id=category_id)) or redirect(url(self.mount_point))
+        if len(category.descendants) == 0:
+            model.provider.delete(model.Category, dict(_id=category_id))
+            flash(_('Category deleted'))
+            return redirect(url(self.mount_point))
+        else:
+            abort(412, _('Cannot delete category because it has descendants'))

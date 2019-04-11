@@ -25,5 +25,4 @@ def get_edit_category_form():
         module = __import__(module, fromlist=form_name)
         form_class = getattr(module, form_name)
         edit_category_form = edit_category_config['edit_category_form_instance'] = form_class()
-
     return edit_category_form

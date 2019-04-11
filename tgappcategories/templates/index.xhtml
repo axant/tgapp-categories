@@ -45,7 +45,12 @@
                    class="small-image"/>
             </td>
             <td>
-              <span class="col-md-5 col-xs-12"><b>${cat.name}</b></span>
+              <span class="col-xs-12">
+		<py:for each="d in range(1, cat.depth)" strip="True">
+		  <span style="padding-right: 12px" class="depth-marker">|</span>
+		</py:for>
+		<b>${cat.name}</b>
+	      </span>
             </td>
             <td>
               <span class="col-md-5 col-xs-12">${cat.description}</span>

@@ -1,7 +1,7 @@
 from tg.i18n import lazy_ugettext as l_
-from tw2.core import Required
-from tw2.forms.widgets import Form, TextField, TextArea, SubmitButton, FileField, HiddenField
-from tw2.forms.widgets import BaseLayout
+from tw2.core import Required, Deferred
+from tw2.forms.widgets import Form, TextField, TextArea, SubmitButton, FileField, HiddenField, SingleSelectField, BaseLayout
+from tgappcategories import model
 from tg import config
 
 
@@ -51,7 +51,7 @@ class NewCategory(Form):
                                 css_class='form-control', attrs=dict(accept='image/*'))
         image_big = FileField(label=pluggable_config.get('image2_label', l_('Big Image')),
                               css_class='form-control', attrs=dict(accept='image/*'))
-
+        parent_id = SingleSelectField(css_class='form-control', options=Deferred(lambda: [(c._id, c.name) for c in model.provider.query(model.Category, filters={})[1]]))
     submit = SubmitButton(css_class='btn btn-primary pull-right', value=l_('Create'))
 
 
