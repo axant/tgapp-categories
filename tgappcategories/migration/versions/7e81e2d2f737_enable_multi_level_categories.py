@@ -8,7 +8,7 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.add_column('tgappcategories_categories', sa.Column('path', sa.Unicode(255), nullable=True))
+    op.add_column('tgappcategories_categories', sa.Column('path', sa.Unicode(255), nullable=True, index=True))
     op.add_column('tgappcategories_categories', sa.Column('depth', sa.Integer))
 
 def downgrade():

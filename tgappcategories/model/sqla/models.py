@@ -20,7 +20,7 @@ class Category(DeclarativeBase):
     name = Column(Unicode(255))
     description = Column(Unicode(1024))
 
-    path = Column(Unicode(255), nullable=True)
+    path = Column(Unicode(255), nullable=True, index=True)
     depth = Column(Integer)
 
     @property
