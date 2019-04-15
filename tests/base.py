@@ -169,6 +169,7 @@ def configure_app(using):
     app_cfg.DBSession = app_cfg.package.model.DBSession
 
     if using == 'ming':  # ugly fix: depot can be configured just once
+        # that if is just wrong, if sqlalchemy tests starts before it doesn't work
         storages = {
             'category_images': 'category_image',
         }

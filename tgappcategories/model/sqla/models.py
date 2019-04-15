@@ -25,8 +25,8 @@ class Category(DeclarativeBase):
 
     @property
     def descendants(self):
-        path = '.%s' % self._id if self.path is None else self.path
-        return app_model.DBSession.query(Category).filter(Category.path.like(path + '.%')).all()
+        path = '~%s' % self._id if self.path is None else self.path
+        return app_model.DBSession.query(Category).filter(Category.path.like(path + '~%')).all()
 
     @property
     def children(self):
@@ -35,42 +35,22 @@ class Category(DeclarativeBase):
         except AttributeError:  # pragma: no cover
             # when self.depth is None, for migrated categories before version 0.4.0
             next_depth = 1
-        return app_model.DBSession.query(Category).filter(Category.path.like(self.path + '.%'), Category.depth == next_depth).all()
+        return app_model.DBSession.query(Category).filter(Category.path.like(self.path + '~%'), Category.depth == next_depth).all()
 
-    @property
-    def parent_path(self):
-        try:
-            return '.'.join(self.path.split('.')[:-1])
-        except AttributeError:  # pragma: no cover
-            # when self.path is None, for migrated categories before version 0.4.0
-            return '.'
     @property
     def parent(self):
         try:
-            return app_model.DBSession.query(Category).filter(Category.path == self.parent_path).one()
+            return app_model.DBSession.query(Category).filter(Category._id == self.path.split('~')[-1]).one()
         except NoResultFound:
             return None
-    @property
-    def brothers(self):
-        return app_model.DBSession.query(Category).filter(Category.path.like(self.parent_path + '.%'), Category.depth == self.depth, Category._id != self._id).all()
 
-    @classmethod
-    def by_path(cls, path):
-        return app_model.DBSession.query(cls).filter(cls.path == path).one()
+    @property
+    def siblings(self):
+        return app_model.DBSession.query(Category).filter(Category.path == self.path, Category._id != self._id).all()
 
     @classmethod
     def by_id(cls, _id):
         return app_model.DBSession.query(cls).filter(cls._id == _id).one()
-
-
-@event.listens_for(Category, 'after_insert')
-def after_insert_category(mapper, connection, target):
-    table = Category.__table__
-    connection.execute(
-        table.update().
-        where(table.c._id == target._id).
-        values(path=target.path + '.' + str(target._id))
-    )
 
 
 class CategoryImage(DeclarativeBase):

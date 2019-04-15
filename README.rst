@@ -9,7 +9,7 @@ About tgapp-categories
 This pluggable allow you to manage (create, read, update, delete)
 categories on a website.
 
-Since version 0.4.0 categories can now be nested, categories have ``children``, ``brothers``, ``descendants``, ``parent`` properties.
+Since version 0.4.0 categories can now be nested, categories have ``children``, ``siblings``, ``descendants``, ``parent`` properties.
 If you installed a previous version using sqlalchemy then you need to run the migration with ``gearbox migrate-pluggable tgappcategories upgrade``
 
 There are 2 images associated to every category

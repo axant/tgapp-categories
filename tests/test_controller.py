@@ -50,7 +50,7 @@ class RegistrationControllerTests(object):
         assert 'category one' == cat.name, cat.name
         assert 'pretty description' == cat.description, cat.description
         assert next(i for i in cat.images if i.image_name == 'image_small').content.url.startswith('/depot/category_images/')
-        assert '.%s' % cat._id == cat.path, cat.path
+        assert '' == cat.path, cat.path
         assert cat.depth == 1, cat.depth
 
     def test_create_subcategory(self):
@@ -73,7 +73,7 @@ class RegistrationControllerTests(object):
                                         filters=dict(name='category one.one'))
         subcat = cats[0]
         assert subcat.parent._id == cat._id
-        assert subcat.path == '.%s.%s' % (subcat.parent._id, subcat._id), subcat.path
+        assert subcat.path == '~%s' % subcat.parent._id, subcat.path
         assert subcat.depth == 2, subcat.depth
 
     def test_update_category(self):
@@ -156,12 +156,164 @@ class RegistrationControllerTests(object):
         __, cats = model.provider.query(model.Category,
                                         filters=dict(name='category one.one.one'))
         child = cats[0]
-        assert moved.path == '.%s' % moving._id, moved.path
+        assert moved.path == '', moved.path
         assert moved.depth == 1
-        assert len(moved.brothers) == 1
-        assert child.path == '.%s.%s' % (moved._id, child._id), child.path
+        assert len(moved.siblings) == 1
+        assert child.path == '~%s' % moved._id, child.path
         assert child.depth == 2
-        
+
+    def test_move_category_with_descendants_to_another_parent(self):
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'new parent', 'description': 'pretty description'},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='new parent'))
+
+        new_parent = cats[0]
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'old parent', 'description': 'pretty description'},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='old parent'))
+
+        old_parent = cats[0]
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'moving', 'description': 'pretty description', 'parent_id': old_parent._id},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='moving'))
+        moving = cats[0]
+        moving.images  # force lazy loading
+        small_id = images_with_image_name(moving, 'image_small')[0]._id
+        big_id = images_with_image_name(moving, 'image_big')[0]._id
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'child', 'description': 'pretty description', 'parent_id': moving._id},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='child'))
+        child = cats[0]
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'descendant', 'description': 'pretty description', 'parent_id': child._id},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='descendant'))
+        descendant = cats[0]
+        assert len(old_parent.descendants) == 3
+        assert len(old_parent.children) == 1
+        self.app.post(
+            '/tgappcategories/update_category/' + str(moving._id),
+            params={'name': 'moved', 'description': '2',
+                    'parent_id': str(new_parent._id),
+                    'image_small_id': small_id, 'image_big_id': big_id},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='new parent'))
+
+        new_parent = cats[0]
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='moved'))
+        moved = cats[0]
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='child'))
+        child = cats[0]
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='descendant'))
+        descendant = cats[0]
+        assert moved.path == '~%s' % new_parent._id, moved.path
+        assert moved.depth == 2
+        assert len(moved.siblings) == 0
+        assert child.path == '~%s~%s' % (new_parent._id, moved._id), child.path
+        assert child.depth == 3
+        assert descendant.path == '~%s~%s~%s' % (new_parent._id, moved._id, child._id), descendant.path
+        assert descendant.depth == 4
+
+    def test_move_category_without_parent_to_a_parent(self):
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'root', 'description': 'pretty description'},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='root'))
+
+        root = cats[0]
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'moving', 'description': 'pretty description'},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='moving'))
+        moving = cats[0]
+        moving.images  # force lazy loading
+        small_id = images_with_image_name(moving, 'image_small')[0]._id
+        big_id = images_with_image_name(moving, 'image_big')[0]._id
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'child', 'description': 'pretty description', 'parent_id': moving._id},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='child'))
+        child = cats[0]
+        self.app.post(
+            '/tgappcategories/create_category',
+            params={'name': 'descendant', 'description': 'pretty description', 'parent_id': child._id},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='descendant'))
+        descendant = cats[0]
+        self.app.post(
+            '/tgappcategories/update_category/' + str(moving._id),
+            params={'name': 'moved', 'description': '2',
+                    'parent_id': str(root._id),
+                    'image_small_id': small_id, 'image_big_id': big_id},
+            extra_environ={'REMOTE_USER': 'manager'},
+            status=302,
+        )
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='root'))
+
+        root = cats[0]
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='moved'))
+        moved = cats[0]
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='child'))
+        child = cats[0]
+        __, cats = model.provider.query(model.Category,
+                                        filters=dict(name='descendant'))
+        descendant = cats[0]
+        assert moved.path == '~%s' % root._id, moved.path
+        assert moved.depth == 2
+        assert len(moved.siblings) == 0
+        assert child.depth == 3
+        assert child.path == '~%s~%s' % (root._id, moved._id), child.path
+        assert descendant.depth == 4
+        assert descendant.path == '~%s~%s~%s' % (root._id, moved._id, child._id), descendant.path
 
     def test_delete_category(self):
         self.app.get('/tgappcategories/create_category',
@@ -208,10 +360,6 @@ class RegistrationControllerTests(object):
                                            filters=dict(name='category one'),
         )
         assert count == 1, cats
-                
-        
-
-        
 
     def test_new_category_form(self):
         resp = self.app.get('/tgappcategories/new_category',
@@ -267,3 +415,4 @@ class TestCategoriesControllerMing(RegistrationControllerTests):
     @classmethod
     def setupClass(cls):
         cls.app_config = configure_app('ming')
+
